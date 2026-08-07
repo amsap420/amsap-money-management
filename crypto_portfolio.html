@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Scenario & Portfolio Dashboard | دشبورد اختصاصی مدیریت سرمایه</title>
+    <title>Crypto Multi-Layer Scenario & Asset Management Command Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -11,7 +11,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Vazirmatn Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -21,14 +21,16 @@
                         sans: ['Vazirmatn', 'sans-serif'],
                     },
                     colors: {
-                        darkBg: '#0b0f17',
-                        cardBg: '#151c28',
-                        cardBorder: '#222f43',
-                        accentGreen: '#10b981',
-                        accentRed: '#f43f5e',
+                        darkBg: '#080c14',
+                        sidebarBg: '#0f172a',
+                        cardBg: '#131b2e',
+                        cardBorder: '#1e293b',
+                        accentCyan: '#06b6d4',
                         accentBlue: '#3b82f6',
                         accentPurple: '#8b5cf6',
-                        accentGold: '#f59e0b',
+                        accentEmerald: '#10b981',
+                        accentRose: '#f43f5e',
+                        accentAmber: '#f59e0b',
                     }
                 }
             }
@@ -37,466 +39,897 @@
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #0b0f17;
-            color: #e2e8f0;
+            background-color: #080c14;
+            color: #f1f5f9;
         }
         .glass-card {
-            background: rgba(21, 28, 40, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid #222f43;
+            background: rgba(19, 27, 46, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border-right: 4px solid #06b6d4;
+            color: #38bdf8;
         }
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0b0f17;
+            background: #080c14;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #222f43;
-            border-radius: 3px;
+            background: #1e293b;
+            border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #3b82f6;
+            background: #06b6d4;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+        .modal-backdrop {
+            background: rgba(4, 7, 13, 0.85);
+            backdrop-filter: blur(8px);
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 custom-scrollbar">
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden custom-scrollbar">
 
-    <!-- HEADER / TOP BAR -->
-    <header class="glass-card rounded-2xl p-4 md:p-6 mb-6 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30">
-                <i data-lucide="layers" class="w-8 h-8"></i>
+    <!-- SIDEBAR NAVIGATION (Matching sleek dark UI like Bhacemp/Spotify designs) -->
+    <aside class="w-full md:w-72 bg-slate-900/90 border-l border-slate-800/80 flex flex-col justify-between p-4 z-30 shrink-0">
+        <div>
+            <!-- Brand / Logo -->
+            <div class="flex items-center gap-3 px-3 py-4 mb-6 border-b border-slate-800/80">
+                <div class="p-2.5 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl text-white shadow-lg shadow-cyan-500/20">
+                    <i data-lucide="cpu" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-black text-white tracking-wide">NEXUS TRADING</h1>
+                    <span class="text-[10px] text-cyan-400 font-mono">S&D 4-LAYER ENGINE v2.5</span>
+                </div>
             </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1.5" id="nav-menu">
+                <button onclick="switchTab('overview')" data-tab="overview" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>داشبورد اصلی (Overview)</span>
+                </button>
+                <button onclick="switchTab('layers')" data-tab="layers" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition">
+                    <i data-lucide="git-commit" class="w-4 h-4"></i>
+                    <span>جریان ۴ لایه‌ای دارایی</span>
+                </button>
+                <button onclick="switchTab('scenarios')" data-tab="scenarios" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                    <span>موتور سناریونویسی و ستاپ‌ها</span>
+                </button>
+                <button onclick="switchTab('wallets')" data-tab="wallets" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                    <span>مدیریت ولت‌ها و صرافی‌ها</span>
+                </button>
+                <button onclick="switchTab('assets')" data-tab="assets" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition">
+                    <i data-lucide="coins" class="w-4 h-4"></i>
+                    <span>مدیریت تک‌تک ارزها (CRUD)</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Quick Portfolio Live Counter in Sidebar -->
+        <div class="mt-8 p-4 rounded-2xl bg-gradient-to-b from-slate-800/60 to-slate-900/90 border border-slate-800">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[11px] text-slate-400 font-medium">مجموع دارایی همگام‌سازی‌شده</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            </div>
+            <div class="text-xl font-black text-white font-mono" id="sidebar-total-usdt">$0.00</div>
+            <p class="text-[10px] text-slate-500 mt-1">تغییرات به صورت آنی در کل تب‌ها سینک می‌شوند.</p>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
+
+        <!-- HEADER TOP BAR -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-wide flex items-center gap-2">
-                    سیستم مدیریت سرمایه و سناریونویسی
-                    <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">۴ لایه‌ای + S&D</span>
-                </h1>
-                <p class="text-xs text-slate-400 mt-1">طراحی اختصاصی برای استراتژی عرضه و تقاضا آلفونسو (Alfonso SD Architecture)</p>
+                <h2 id="page-title" class="text-2xl font-black text-white tracking-wide">داشبورد اصلی (Overview)</h2>
+                <p id="page-subtitle" class="text-xs text-slate-400 mt-1">مدیریت سینک‌شده، سناریونویسی بر پایه عرضه و تقاضا و کنترل لایه‌ها</p>
             </div>
-        </div>
-
-        <!-- Portfolio Quick Metrics -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto">
-            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
-                <span class="text-xs text-slate-400 block mb-0.5">کل کل دارایی (USDT)</span>
-                <span id="total-usdt-val" class="text-lg font-bold text-emerald-400">۱,۲۲۱ $</span>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
-                <span class="text-xs text-slate-400 block mb-0.5">وزن اصلی (BTC)</span>
-                <span id="btc-weight-val" class="text-lg font-bold text-amber-400">۴۵.۶%</span>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
-                <span class="text-xs text-slate-400 block mb-0.5">نقدینگی تتر (USDT)</span>
-                <span id="usdt-weight-val" class="text-lg font-bold text-blue-400">۱۰.۴%</span>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-center">
-                <span class="text-xs text-slate-400 block mb-0.5">سناریوهای فعال</span>
-                <span class="text-lg font-bold text-purple-400">۶ سناریو</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- 4-LAYER ASSET FLOW MATRIX -->
-    <section class="mb-6">
-        <div class="glass-card rounded-2xl p-4 border border-slate-800">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
-                    <i data-lucide="git-commit" class="w-4 h-4 text-blue-400"></i>
-                    جریان دارایی در لایه‌های چهارگانه (4-Layer Asset Lifecycle Flow)
-                </h2>
-                <span class="text-xs text-slate-500">تومان ⬅️ تتر ⬅️ بیت‌کوین ⬅️ آلت‌کوین بر پایه BTC</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <!-- Layer 1 -->
-                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-emerald-500/50 transition">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-slate-400 font-semibold">لایه ۱: ریال / تومان</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">فیات</span>
-                    </div>
-                    <div class="text-lg font-bold text-white mb-1">بانک / شارژ ریالی</div>
-                    <p class="text-[11px] text-slate-500">آماده ورود به کریپتو در زمان افت‌های ساختاری</p>
-                    <div class="absolute bottom-0 right-0 left-0 h-1 bg-emerald-500/30"></div>
-                </div>
-                <!-- Layer 2 -->
-                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-blue-500/50 transition">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-slate-400 font-semibold">لایه ۲: تتر (USDT)</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">۱۲۷ $ (۱۰.۴%)</span>
-                    </div>
-                    <div class="text-lg font-bold text-white mb-1">نقدینگی دلاری</div>
-                    <p class="text-[11px] text-slate-500">پایه شکار زون‌های تقاضای بیت‌کوین</p>
-                    <div class="absolute bottom-0 right-0 left-0 h-1 bg-blue-500"></div>
-                </div>
-                <!-- Layer 3 -->
-                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-amber-500/50 transition">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-slate-400 font-semibold">لایه ۳: بیت‌کوین (BTC) - Core</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">۵۵۷ $ (۴۵.۶%)</span>
-                    </div>
-                    <div class="text-lg font-bold text-white mb-1">ستون اصلی دارایی</div>
-                    <p class="text-[11px] text-slate-500">مبنای ورود به پوزیشن‌های آلت‌کوینی</p>
-                    <div class="absolute bottom-0 right-0 left-0 h-1 bg-amber-500"></div>
-                </div>
-                <!-- Layer 4 -->
-                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-purple-500/50 transition">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-slate-400 font-semibold">لایه ۴: آلت‌کوین‌ها بر پایه BTC</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">۵۳۷ $ (۴۴.۰%)</span>
-                    </div>
-                    <div class="text-lg font-bold text-white mb-1">پوزیشن‌های آلت (BNB, ETH...)</div>
-                    <p class="text-[11px] text-slate-500">نقاط ورود/خروج بر اساس چارت ALT/BTC</p>
-                    <div class="absolute bottom-0 right-0 left-0 h-1 bg-purple-500"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MAIN DASHBOARD CONTENT GRID -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- RIGHT PANEL: ASSETS TABLE & EXCHANGES (5 COLS) -->
-        <div class="lg:col-span-5 space-y-6">
             
-            <!-- PORTFOLIO ALLOCATION CHART CARD -->
-            <div class="glass-card rounded-2xl p-5 border border-slate-800">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i data-lucide="pie-chart" class="w-5 h-5 text-amber-400"></i>
-                        توزیع بصری کل سبد (Asset Allocation)
-                    </h2>
-                    <span class="text-xs text-slate-400">مجموع: <b class="text-white">1221 USDT</b></span>
+            <div class="flex items-center gap-3">
+                <button onclick="openAddAssetModal()" class="text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-cyan-600/20">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> افزودن ارز جدید
+                </button>
+                <button onclick="openAddWalletModal()" class="text-xs bg-purple-600 hover:bg-purple-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-purple-600/20">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> افزودن صرافی / ولت
+                </button>
+                <button onclick="resetToDefaultData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-2 rounded-xl transition border border-slate-700">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- ================= TAB 1: OVERVIEW ================= -->
+        <div id="tab-overview" class="tab-content space-y-6">
+            <!-- Top Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs text-slate-400">کل کل دارایی (USDT)</span>
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="dollar-sign" class="w-4 h-4"></i></div>
+                    </div>
+                    <div class="text-2xl font-black text-emerald-400 font-mono" id="overview-total-usdt">$0.00</div>
+                    <span class="text-[10px] text-slate-500 mt-1 block">سینک‌شده با تمام ولت‌ها</span>
                 </div>
-                <div class="relative h-64 flex items-center justify-center">
-                    <canvas id="portfolioChart"></canvas>
+                <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs text-slate-400">لایه ۳: وزن بیت‌کوین (BTC)</span>
+                        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-lg"><i data-lucide="bitcoin" class="w-4 h-4"></i></div>
+                    </div>
+                    <div class="text-2xl font-black text-amber-400 font-mono" id="overview-btc-val">$0.00</div>
+                    <span class="text-[10px] text-slate-500 mt-1 block" id="overview-btc-pct">0% از کل سرمایه</span>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs text-slate-400">لایه ۲: نقدینگی تتر (USDT)</span>
+                        <div class="p-2 bg-cyan-500/10 text-cyan-400 rounded-lg"><i data-lucide="coins" class="w-4 h-4"></i></div>
+                    </div>
+                    <div class="text-2xl font-black text-cyan-400 font-mono" id="overview-usdt-val">$0.00</div>
+                    <span class="text-[10px] text-slate-500 mt-1 block" id="overview-usdt-pct">0% آمادگی خرید</span>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs text-slate-400">سناریوهای فعال</span>
+                        <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg"><i data-lucide="activity" class="w-4 h-4"></i></div>
+                    </div>
+                    <div class="text-2xl font-black text-purple-400 font-mono" id="overview-scenarios-count">0</div>
+                    <span class="text-[10px] text-slate-500 mt-1 block">ستاپ آماده بر اساس S&D</span>
                 </div>
             </div>
 
-            <!-- ASSETS & EXCHANGE BREAKDOWN MATRIX -->
-            <div class="glass-card rounded-2xl p-5 border border-slate-800">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i>
-                        جدول دارایی‌ها و توزیع صرافی‌ها
-                    </h2>
-                    <button id="add-asset-btn" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> افزودن ارز
+            <!-- Charts & Quick Summary Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Donut Chart Portfolio -->
+                <div class="lg:col-span-5 glass-card p-6 rounded-2xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-cyan-400"></i>
+                        توزیع بصری کل ارزها (Portfolio Allocation)
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="overviewChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Active Scenarios Quick List -->
+                <div class="lg:col-span-7 glass-card p-6 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                            خلاصه سناریوهای فعال معاملاتی
+                        </h3>
+                        <button onclick="switchTab('scenarios')" class="text-xs text-cyan-400 hover:underline">مشاهده و ویرایش همه ←</button>
+                    </div>
+                    <div id="overview-scenarios-list" class="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: 4-LAYER FLOW MATRIX ================= -->
+        <div id="tab-layers" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+                    <i data-lucide="layers" class="w-5 h-5 text-cyan-400"></i>
+                    جریان دارایی در لایه‌های چهارگانه (4-Layer Asset Flow Architecture)
+                </h3>
+                <p class="text-xs text-slate-400 mb-6">
+                    در این سیستم، نقدینگی از تومان وارد تتر، سپس به بیت‌کوین (پایه) و در نهایت به آلت‌کوین‌ها منتقل می‌شود.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <!-- Layer 1 -->
+                    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 relative overflow-hidden">
+                        <span class="text-xs text-slate-400 font-bold block mb-1">لایه ۱: تومان (ریال)</span>
+                        <div class="text-xl font-bold text-white mb-2">فیات / نقدینگی ریالی</div>
+                        <p class="text-xs text-slate-500">پایه اصلی شارژ صرافی‌های داخلی</p>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+                    </div>
+                    <!-- Layer 2 -->
+                    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 relative overflow-hidden">
+                        <span class="text-xs text-slate-400 font-bold block mb-1">لایه ۲: تتر (USDT)</span>
+                        <div class="text-xl font-bold text-cyan-400 mb-2 font-mono" id="layer2-val">$0.00</div>
+                        <p class="text-xs text-slate-500">استیبل‌کوین آماده شکار زون‌های بیت‌کوین</p>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-cyan-500"></div>
+                    </div>
+                    <!-- Layer 3 -->
+                    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 relative overflow-hidden">
+                        <span class="text-xs text-slate-400 font-bold block mb-1">لایه ۳: بیت‌کوین (BTC) - Core</span>
+                        <div class="text-xl font-bold text-amber-400 mb-2 font-mono" id="layer3-val">$0.00</div>
+                        <p class="text-xs text-slate-500">ستون اصلی دارایی دیجیتال سبد</p>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500"></div>
+                    </div>
+                    <!-- Layer 4 -->
+                    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 relative overflow-hidden">
+                        <span class="text-xs text-slate-400 font-bold block mb-1">لایه ۴: آلت‌کوین بر پایه BTC</span>
+                        <div class="text-xl font-bold text-purple-400 mb-2 font-mono" id="layer4-val">$0.00</div>
+                        <p class="text-xs text-slate-500">پوزیشن‌های سوپراستار بر پایه جفت ارزهای BTC</p>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-purple-500"></div>
+                    </div>
+                </div>
+
+                <!-- Interactive Layer Flow Breakdown Chart -->
+                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                    <h4 class="text-sm font-bold text-slate-200 mb-4">نمودار نسبت و توازن لایه‌ها</h4>
+                    <div class="relative h-64">
+                        <canvas id="layersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: SCENARIO ENGINE ================= -->
+        <div id="tab-scenarios" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i>
+                            موتور سناریونویسی و ستاپ‌های تحلیلی
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">تعریف ۴ تا ۶ سناریو با درصد احتمال، پله‌بندی حجم و نقاط ورود/خروج بدون مداخلات احساسی</p>
+                    </div>
+                    <button onclick="openAddScenarioModal()" class="text-xs bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-purple-600/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i> ساخت سناریوی جدید
                     </button>
                 </div>
 
-                <!-- Asset Table -->
-                <div class="overflow-x-auto custom-scrollbar max-h-80 mb-6 border border-slate-800 rounded-xl">
-                    <table class="w-full text-right text-xs text-slate-300">
-                        <thead class="bg-slate-900/90 text-slate-400 text-[11px] uppercase border-b border-slate-800 sticky top-0">
-                            <tr>
-                                <th class="p-2.5">ارز</th>
-                                <th class="p-2.5">ارزش (USDT)</th>
-                                <th class="p-2.5">درصد سبد</th>
-                                <th class="p-2.5">وضعیت / یادداشت</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assets-table-body" class="divide-y divide-slate-800/60">
-                            <!-- Populated dynamically by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Exchange Holdings Breakdown Table -->
-                <h3 class="text-xs font-bold text-slate-400 mb-2.5 flex items-center gap-1.5">
-                    <i data-lucide="building-2" class="w-4 h-4 text-blue-400"></i>
-                    تفکیک موجودی در صرافی‌ها (BITPIN | LBANK | KCEX)
-                </h3>
-                <div class="overflow-x-auto border border-slate-800 rounded-xl">
-                    <table class="w-full text-right text-xs text-slate-300">
-                        <thead class="bg-slate-900/90 text-slate-400 text-[11px] border-b border-slate-800">
-                            <tr>
-                                <th class="p-2">ارز</th>
-                                <th class="p-2 text-center text-emerald-400">BITPIN</th>
-                                <th class="p-2 text-center text-blue-400">LBANK</th>
-                                <th class="p-2 text-center text-amber-400">KCEX</th>
-                                <th class="p-2 text-center">مجموع صرافی</th>
-                                <th class="p-2 text-center text-purple-400">HOLD (کیف سرد)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800/60 bg-slate-900/30">
-                            <tr>
-                                <td class="p-2 font-bold text-amber-400">BTC</td>
-                                <td class="p-2 text-center">13 $</td>
-                                <td class="p-2 text-center">497 $</td>
-                                <td class="p-2 text-center">47 $</td>
-                                <td class="p-2 text-center font-semibold text-white">557 $</td>
-                                <td class="p-2 text-center text-slate-500">-</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-bold text-blue-400">ETH</td>
-                                <td class="p-2 text-center">0 $</td>
-                                <td class="p-2 text-center">118 $</td>
-                                <td class="p-2 text-center">25 $</td>
-                                <td class="p-2 text-center font-semibold text-white">143 $</td>
-                                <td class="p-2 text-center font-semibold text-purple-300">451 $</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-bold text-cyan-400">LINK</td>
-                                <td class="p-2 text-center">0 $</td>
-                                <td class="p-2 text-center">12 $</td>
-                                <td class="p-2 text-center">24 $</td>
-                                <td class="p-2 text-center font-semibold text-white">36 $</td>
-                                <td class="p-2 text-center font-semibold text-purple-300">68 $</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-bold text-emerald-400">USDT</td>
-                                <td class="p-2 text-center">30 $</td>
-                                <td class="p-2 text-center">97 $</td>
-                                <td class="p-2 text-center">0 $</td>
-                                <td class="p-2 text-center font-semibold text-white">127 $</td>
-                                <td class="p-2 text-center text-slate-500">-</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- LEFT PANEL: SCENARIO ENGINE & STEP LADDERING (7 COLS) -->
-        <div class="lg:col-span-7 space-y-6">
-
-            <!-- SCENARIO ENGINE CARD HEADER -->
-            <div class="glass-card rounded-2xl p-5 border border-slate-800">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-slate-800/80 pb-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i>
-                            موتور سناریونویسی و مدیریت پوزیشن (Scenario Engine)
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">ثبت ۶ سناریوی محتمل آینده، درصد شانس، و پله‌بندی حجم بدون مداخلات احساسی</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <select id="scenario-target-select" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-amber-300 font-bold outline-none focus:border-blue-500">
-                            <option value="BNB">سناریوهای BNB/BTC</option>
-                            <option value="BTC">سناریوهای BTC/USDT</option>
-                            <option value="ETH">سناریوهای ETH/BTC</option>
-                            <option value="SOL">سناریوهای SOL/BTC</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- BNB STEP LADDERING STRATEGY BAR (B1, B2, B3, TRAIL) -->
+                <!-- Scenario Step Allocation Strategy Bar -->
                 <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-400"></i>
-                            تخصیص پله‌ای خرید/فروش (Step Allocation Breakdown)
-                        </span>
-                        <span class="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Now: 100% (0.733 BNB)</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-center text-xs">
-                        <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/60">
-                            <span class="text-slate-400 block text-[10px]">پله B1 (خرید/فروش اولیه)</span>
-                            <span class="font-bold text-emerald-400 text-sm">۱۰%</span>
-                            <span class="block text-[11px] text-slate-400 mt-0.5">0.073 BNB</span>
+                    <span class="text-xs font-bold text-slate-300 block mb-3">راهنمای پله‌بندی استاندارد مدیریت سرمایه (Step Laddering)</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700">
+                            <span class="text-slate-400 block text-[10px]">پله B1 (ورود اولیه)</span>
+                            <span class="font-black text-cyan-400 text-sm">۱۰%</span>
                         </div>
-                        <div class="bg-slate-800/60 p-2.5 rounded-lg border border-emerald-500/30">
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-emerald-500/30">
                             <span class="text-slate-400 block text-[10px]">پله B2 (زون اصلی SD)</span>
-                            <span class="font-bold text-emerald-400 text-sm">۶۵%</span>
-                            <span class="block text-[11px] text-slate-400 mt-0.5">0.476 BNB</span>
+                            <span class="font-black text-emerald-400 text-sm">۶۵%</span>
                         </div>
-                        <div class="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/60">
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700">
                             <span class="text-slate-400 block text-[10px]">پله B3 (تاییدیه دوم)</span>
-                            <span class="font-bold text-emerald-400 text-sm">۱۰%</span>
-                            <span class="block text-[11px] text-slate-400 mt-0.5">0.073 BNB</span>
+                            <span class="font-black text-amber-400 text-sm">۱۰%</span>
                         </div>
-                        <div class="bg-slate-800/60 p-2.5 rounded-lg border border-purple-500/30">
-                            <span class="text-slate-400 block text-[10px]">Trail / تارگت آخـر</span>
-                            <span class="font-bold text-purple-400 text-sm">۱۵%</span>
-                            <span class="block text-[11px] text-slate-400 mt-0.5">0.110 BNB</span>
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-purple-500/30">
+                            <span class="text-slate-400 block text-[10px]">تارگت آخـر (Trail)</span>
+                            <span class="font-black text-purple-400 text-sm">۱۵%</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 6 ACTIVE SCENARIOS CARDS GRID -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="scenarios-container">
-                    <!-- Scenario Cards injected by JavaScript -->
-                </div>
-
-            </div>
-
-            <!-- STRATEGY RULES & SD CHECKLIST -->
-            <div class="glass-card rounded-2xl p-5 border border-slate-800">
-                <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                    چک‌لیست اعتبارسنجی زون‌های عرضه و تقاضا (Alfonso SD Rules)
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                        <span class="font-bold text-amber-400 block mb-1">1. تازگی (Freshness)</span>
-                        <p class="text-slate-400 text-[11px]">آیا زون دست‌نخورده (Un-tested) است یا قبلاً لمس شده؟ فقط زون‌های تازه در لایه ۳ و ۴ اولویت دارند.</p>
-                    </div>
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                        <span class="font-bold text-blue-400 block mb-1">2. قدرت خروج (Strength)</span>
-                        <p class="text-slate-400 text-[11px]">میزان کندل‌های ERC و خروج پرقدرت قیمت از زون اصلی چقدر بوده است؟</p>
-                    </div>
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                        <span class="font-bold text-purple-400 block mb-1">3. زمان در زون (Time Spent)</span>
-                        <p class="text-slate-400 text-[11px]">قیمت چقدر در زون درگیر بوده؟ بیس‌های با حداکثر ۱ تا ۶ کندل بالاترین کیفیت را دارند.</p>
-                    </div>
+                <!-- Scenario Cards Container -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="scenarios-cards-container">
+                    <!-- Dynamic scenario cards -->
                 </div>
             </div>
-
         </div>
 
+        <!-- ================= TAB 4: WALLETS & EXCHANGES ================= -->
+        <div id="tab-wallets" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i>
+                            مدیریت صرافی‌ها و ولت‌های اختصاصی
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">امکان تعریف نامحدود صرافی/کیف‌پول و توزیع دقیق دارایی‌ها</p>
+                    </div>
+                    <button onclick="openAddWalletModal()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i> افزودن صرافی/کیف‌پول جدید
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="wallets-cards-container">
+                    <!-- Dynamic Wallet Cards -->
+                </div>
+
+                <!-- Matrix Table: Assets per Wallet -->
+                <h4 class="text-sm font-bold text-slate-300 mb-3">ماتریس توزیع دارایی‌ها در صرافی‌ها و کیف‌پول‌ها</h4>
+                <div class="overflow-x-auto border border-slate-800 rounded-2xl custom-scrollbar">
+                    <table class="w-full text-right text-xs text-slate-300">
+                        <thead class="bg-slate-900/90 text-slate-400 text-[11px] uppercase border-b border-slate-800" id="wallet-matrix-header">
+                            <!-- Dynamic Matrix Header -->
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 bg-slate-900/20" id="wallet-matrix-body">
+                            <!-- Dynamic Matrix Body -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: ASSETS CRUD MANAGEMENT ================= -->
+        <div id="tab-assets" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="coins" class="w-5 h-5 text-amber-400"></i>
+                            مدیریت و ویرایش تک‌تک ارزها (Asset Manager)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">تغییر مقدار دلار، رنگ، یادداشت و صرافی‌های مربوط به هر ارز با همگام‌سازی لحظه‌ای</p>
+                    </div>
+                    <button onclick="openAddAssetModal()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-amber-600/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i> تعریف ارز جدید
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-800 rounded-2xl custom-scrollbar">
+                    <table class="w-full text-right text-xs text-slate-300">
+                        <thead class="bg-slate-900/90 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">نام ارز</th>
+                                <th class="p-3">مجموع ارزش (USDT)</th>
+                                <th class="p-3">سهم از کل سبد</th>
+                                <th class="p-3">یادداشت / ستاپ</th>
+                                <th class="p-3 text-center">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60" id="crud-assets-table-body">
+                            <!-- Dynamic Assets Table -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal 1: Add/Edit Asset -->
+    <div id="modal-asset" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeModal('modal-asset')" class="absolute top-4 left-4 text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-base font-bold text-white mb-4" id="modal-asset-title">افزودن ارز جدید</h3>
+            
+            <form id="asset-form" onsubmit="handleAssetSubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="asset-id">
+                <div>
+                    <label class="block text-slate-400 mb-1">نماد ارز (مثلاً BTC, BNB, ETH)</label>
+                    <input type="text" id="asset-symbol" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-cyan-500 font-bold uppercase">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">مجموع مقدار تتری (USDT)</label>
+                    <input type="number" step="any" id="asset-usdt" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-emerald-400 outline-none focus:border-cyan-500 font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">رنگ اختصاصی در نمودارها</label>
+                    <input type="color" id="asset-color" value="#06b6d4" class="w-full h-10 bg-slate-800 border border-slate-700 rounded-xl p-1 cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">یادداشت تحلیلی / وضعیت</label>
+                    <input type="text" id="asset-note" placeholder="مثلاً: ورود در زون روزانه" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-cyan-500">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-asset')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">انصراف</button>
+                    <button type="submit" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/20">ذخیره و همگام‌سازی</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- SCRIPT FOR DYNAMIC DATA, CHART & LOCALSTORAGE -->
+    <!-- Modal 2: Add/Edit Wallet -->
+    <div id="modal-wallet" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeModal('modal-wallet')" class="absolute top-4 left-4 text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-base font-bold text-white mb-4">افزودن صرافی یا کیف‌پول جدید</h3>
+            
+            <form id="wallet-form" onsubmit="handleWalletSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">نام صرافی / ولت (مثلاً TrustWallet, KuCoin)</label>
+                    <input type="text" id="wallet-name" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-emerald-500 font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">نوع محل نگهداری</label>
+                    <select id="wallet-type" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-emerald-500 font-bold">
+                        <option value="صرافی متمرکز">صرافی متمرکز (CEX)</option>
+                        <option value="کیف‌پول گرم">کیف‌پول نرم‌افزاری (Hot Wallet)</option>
+                        <option value="کیف‌پول سخت‌افزاری">کیف‌پول سرد (Cold Wallet)</option>
+                    </select>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-wallet')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">انصراف</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20">ایجاد ولت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add/Edit Scenario -->
+    <div id="modal-scenario" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="closeModal('modal-scenario')" class="absolute top-4 left-4 text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-base font-bold text-white mb-4">تعریف سناریوی معاملاتی جدید</h3>
+            
+            <form id="scenario-form" onsubmit="handleScenarioSubmit(event)" class="space-y-4 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">شماره/کد سناریو</label>
+                        <input type="text" id="scenario-code" placeholder="مثلاً 32" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">درصد احتمال وقوع</label>
+                        <input type="text" id="scenario-prob" placeholder="مثلاً 15%" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-amber-400 font-bold outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">نوع اقدام</label>
+                        <select id="scenario-action" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold outline-none">
+                            <option value="buy">خرید (BUY)</option>
+                            <option value="sell">فروش (SELL)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">حجم اختصاص‌یافته</label>
+                        <input type="text" id="scenario-amount" placeholder="مثلاً 100 USDT" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1">وضعیت ستاپ</label>
+                    <input type="text" id="scenario-status" placeholder="مثلاً اردور ست شد / در انتظار لمس" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-purple-300 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1">توضیحات زون عرضه/تقاضا آلفونسو</label>
+                    <textarea id="scenario-note" rows="2" placeholder="توضیح زون روزانه/چهارساعته..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-scenario')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">انصراف</button>
+                    <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl shadow-lg shadow-purple-600/20">ثبت سناریو</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MAIN JAVASCRIPT STATE ENGINE & REACTIVE SYNC -->
     <script>
-        // Lucide Icons Initialization
-        lucide.createIcons();
+        // 1. Initial Default State
+        const defaultState = {
+            activeTab: 'overview',
+            assets: [
+                { id: '1', name: 'BTC', usdt: 557, note: 'پایه اصلی سبد (لایه ۳)', color: '#f59e0b', allocations: { 'bitpin': 13, 'lbank': 497, 'kcex': 47, 'hold': 0 } },
+                { id: '2', name: 'ETH', usdt: 143, note: 'نگهداری در کیف سرد', color: '#6366f1', allocations: { 'bitpin': 0, 'lbank': 118, 'kcex': 25, 'hold': 451 } },
+                { id: '3', name: 'USDT', usdt: 127, note: 'نقدینگی لایه ۲', color: '#10b981', allocations: { 'bitpin': 30, 'lbank': 97, 'kcex': 0, 'hold': 0 } },
+                { id: '4', name: 'BNB', usdt: 58, note: 'فعال در سناریو بستر', color: '#eab308', allocations: { 'bitpin': 0, 'lbank': 58, 'kcex': 0, 'hold': 0 } },
+                { id: '5', name: 'TRX', usdt: 43, note: 'به BTC پایین بحران', color: '#ef4444', allocations: { 'bitpin': 0, 'lbank': 43, 'kcex': 0, 'hold': 0 } },
+                { id: '6', name: 'DOGE', usdt: 41, note: 'سوئینگ ترید', color: '#e11d48', allocations: { 'bitpin': 0, 'lbank': 41, 'kcex': 0, 'hold': 0 } },
+                { id: '7', name: 'LINK', usdt: 39, note: 'هولد + ترید', color: '#0284c7', allocations: { 'bitpin': 0, 'lbank': 12, 'kcex': 24, 'hold': 68 } },
+                { id: '8', name: 'SOL', usdt: 29, note: 'زون تقاضای هفتگی', color: '#14b8a6', allocations: { 'bitpin': 0, 'lbank': 29, 'kcex': 0, 'hold': 0 } },
+                { id: '9', name: 'ETC', usdt: 27, note: 'واکنش به زون روزانه', color: '#8b5cf6', allocations: { 'bitpin': 0, 'lbank': 27, 'kcex': 0, 'hold': 0 } },
+                { id: '10', name: 'ADA', usdt: 25, note: 'کمکی', color: '#3b82f6', allocations: { 'bitpin': 0, 'lbank': 25, 'kcex': 0, 'hold': 0 } },
+                { id: '11', name: 'PEPE', usdt: 25, note: 'به BTC پایین بحران', color: '#22c55e', allocations: { 'bitpin': 0, 'lbank': 25, 'kcex': 0, 'hold': 0 } },
+                { id: '12', name: 'AVAX', usdt: 15, note: 'زون نقدینگی', color: '#f43f5e', allocations: { 'bitpin': 0, 'lbank': 15, 'kcex': 0, 'hold': 0 } },
+                { id: '13', name: 'OTHER', usdt: 15, note: 'ارزهای خرد (MANA, ALGO...)', color: '#64748b', allocations: { 'bitpin': 0, 'lbank': 15, 'kcex': 0, 'hold': 0 } }
+            ],
+            wallets: [
+                { id: 'bitpin', name: 'BITPIN', type: 'صرافی متمرکز', color: 'emerald' },
+                { id: 'lbank', name: 'LBANK', type: 'صرافی متمرکز', color: 'blue' },
+                { id: 'kcex', name: 'KCEX', type: 'صرافی متمرکز', color: 'amber' },
+                { id: 'hold', name: 'کیف‌پول سرد (Cold Wallet)', type: 'کیف‌پول سخت‌افزاری', color: 'purple' }
+            ],
+            scenarios: [
+                { id: '26', prob: '12%', action: 'buy', amount: '100 USDT', status: 'اردور ست شد', note: 'واکنش اولیه به زون تقاضا H4 آلفونسو' },
+                { id: '27', prob: '9%', action: 'buy', amount: '100 USDT', status: 'در انتظار لمس', note: 'پله دوم در نفوذ به بیس' },
+                { id: '28', prob: '7%', action: 'buy', amount: '50 USDT', status: 'آماده‌باش', note: 'پله اضافه در FTR ساختاری' },
+                { id: '29', prob: '15%', action: 'buy', amount: '100 USDT', status: 'تاییدیه صادر شد', note: 'شکست خط خطی و تغییر ماهیت' },
+                { id: '31', prob: '10%', action: 'sell', amount: '100 %', status: 'تارگت اول (TP1)', note: 'خروج در زون عرضه هفتگی' },
+                { id: '5/6', prob: '5%', action: 'sell', amount: 'فول خروج', status: 'حد ضرر کلی', note: 'شکست زون تقاضای اصلی' }
+            ]
+        };
 
-        // 1. Portfolio Initial Data
-        const initialAssets = [
-            { id: 1, name: 'BTC', usdt: 557, note: 'پایه اصلی سبد (لایه ۳)', color: '#f59e0b' },
-            { id: 2, name: 'ETH', usdt: 143, note: 'نگهداری در کیف سرد', color: '#6366f1' },
-            { id: 3, name: 'USDT', usdt: 127, note: 'نقدینگی لایه ۲', color: '#10b981' },
-            { id: 4, name: 'BNB', usdt: 58, note: 'فعال در سناریو بستر', color: '#eab308' },
-            { id: 5, name: 'TRX', usdt: 43, note: 'به BTC پایین بحران', color: '#ef4444' },
-            { id: 6, name: 'DOGE', usdt: 41, note: 'سوئینگ ترید', color: '#e11d48' },
-            { id: 7, name: 'LINK', usdt: 39, note: 'هولد + ترید', color: '#0284c7' },
-            { id: 8, name: 'SOL', usdt: 29, note: 'زون تقاضای هفتگی', color: '#14b8a6' },
-            { id: 9, name: 'ETC', usdt: 27, note: 'واکنش به زون روزانه', color: '#8b5cf6' },
-            { id: 10, name: 'ADA', usdt: 25, note: 'کمکی', color: '#3b82f6' },
-            { id: 11, name: 'PEPE', usdt: 25, note: 'به BTC پایین بحران', color: '#22c55e' },
-            { id: 12, name: 'AVAX', usdt: 15, note: 'زون نقدینگی', color: '#f43f5e' },
-            { id: 13, name: 'OTHER', usdt: 15, note: 'ارزهای خرد (MANA, ALGO...)', color: '#64748b' }
-        ];
-
-        // 2. Initial Scenarios Data (Based on user screenshot)
-        const initialScenarios = [
-            { id: '26', prob: '12%', action: 'buy', amount: '100 USDT', status: 'اردور ست شد', note: 'واکنش اولیه به زون تقاضا H4', color: 'emerald' },
-            { id: '27', prob: '9%', action: 'buy', amount: '100 USDT', status: 'در انتظار لمس', note: 'پله دوم در نفوذ به بیس', color: 'emerald' },
-            { id: '28', prob: '7%', action: 'buy', amount: '50 USDT', status: 'آماده‌باش', note: 'پله اضافه در FTR ساختاری', color: 'emerald' },
-            { id: '29', prob: '15%', action: 'buy', amount: '100 USDT', status: 'تاییدیه صادر شد', note: 'شکست خط خطی و تغییر ماهیت', color: 'emerald' },
-            { id: '31', prob: '10%', action: 'sell', amount: '100 %', status: 'تارگت اول (TP1)', note: 'خروج در زون عرضه هفتگی', color: 'rose' },
-            { id: '5/6', prob: '5%', action: 'sell', amount: 'فول خروج', status: 'حد ضرر کلی', note: 'شکست زون تقاضای اصلی آلفونسو', color: 'rose' }
-        ];
-
-        // Load or Save to LocalStorage
-        let assets = JSON.parse(localStorage.getItem('amir_assets')) || initialAssets;
-        let scenarios = JSON.parse(localStorage.getItem('amir_scenarios')) || initialScenarios;
+        // Load or Initialize App State
+        let appState = JSON.parse(localStorage.getItem('nexus_app_state')) || defaultState;
 
         function saveState() {
-            localStorage.setItem('amir_assets', JSON.stringify(assets));
-            localStorage.setItem('amir_scenarios', JSON.stringify(scenarios));
+            localStorage.setItem('nexus_app_state', JSON.stringify(appState));
+            syncAllUI();
         }
 
-        // Render Assets Table
-        function renderAssets() {
-            const tbody = document.getElementById('assets-table-body');
-            tbody.innerHTML = '';
-            const total = assets.reduce((acc, curr) => acc + curr.usdt, 0);
+        function resetToDefaultData() {
+            if(confirm("آیا از بازنشانی کامل اطلاعات به حالت پیش‌فرض اطمینان دارید؟")) {
+                appState = JSON.parse(JSON.stringify(defaultState));
+                saveState();
+            }
+        }
 
-            assets.forEach((asset, idx) => {
-                const percent = ((asset.usdt / total) * 100).toFixed(1);
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-                tr.innerHTML = `
-                    <td class="p-2.5 font-bold flex items-center gap-1.5" style="color: ${asset.color}">
-                        <span class="w-2 h-2 rounded-full" style="background-color: ${asset.color}"></span>
-                        ${asset.name}
-                    </td>
-                    <td class="p-2.5 font-semibold text-white">
-                        <input type="number" value="${asset.usdt}" data-idx="${idx}" class="asset-usdt-input bg-transparent border-b border-dashed border-slate-700 w-16 text-emerald-400 font-bold focus:border-blue-500 outline-none">
-                        $
-                    </td>
-                    <td class="p-2.5 font-mono text-slate-400">${percent}%</td>
-                    <td class="p-2.5 text-slate-400 text-[11px]">${asset.note || '-'}</td>
-                `;
-                tbody.appendChild(tr);
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            appState.activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('#nav-menu .nav-link').forEach(btn => {
+                if(btn.dataset.tab === tabId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
             });
 
-            document.getElementById('total-usdt-val').innerText = `${total.toLocaleString()} $`;
+            // Dynamic Header Titles
+            const titles = {
+                'overview': 'داشبورد اصلی (Overview)',
+                'layers': 'جریان ۴ لایه‌ای دارایی',
+                'scenarios': 'موتور سناریونویسی و ستاپ‌ها',
+                'wallets': 'مدیریت صرافی‌ها و ولت‌ها',
+                'assets': 'مدیریت و ویرایش تک‌تک ارزها'
+            };
+            document.getElementById('page-title').innerText = titles[tabId] || 'داشبورد';
             
-            // Listen to live asset changes
-            document.querySelectorAll('.asset-usdt-input').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const idx = e.target.dataset.idx;
-                    const newVal = parseFloat(e.target.value) || 0;
-                    assets[idx].usdt = newVal;
-                    saveState();
-                    renderAssets();
-                    updateChart();
-                });
+            syncAllUI();
+        }
+
+        // Calculations & Core Reactive Engine
+        function getTotalPortfolioUsdt() {
+            return appState.assets.reduce((sum, item) => sum + (parseFloat(item.usdt) || 0), 0);
+        }
+
+        function getBtcUsdtValue() {
+            const btcAsset = appState.assets.find(a => a.name.toUpperCase() === 'BTC');
+            return btcAsset ? parseFloat(btcAsset.usdt) : 0;
+        }
+
+        function getUsdtValue() {
+            const usdtAsset = appState.assets.find(a => a.name.toUpperCase() === 'USDT');
+            return usdtAsset ? parseFloat(usdtAsset.usdt) : 0;
+        }
+
+        function getAltsValue() {
+            const total = getTotalPortfolioUsdt();
+            const btc = getBtcUsdtValue();
+            const usdt = getUsdtValue();
+            return Math.max(0, total - btc - usdt);
+        }
+
+        // Global Sync Function
+        function syncAllUI() {
+            const totalUsdt = getTotalPortfolioUsdt();
+            const btcVal = getBtcUsdtValue();
+            const usdtVal = getUsdtValue();
+            const altsVal = getAltsValue();
+
+            // 1. Sidebar & Top Metrics Sync
+            document.getElementById('sidebar-total-usdt').innerText = `$${totalUsdt.toLocaleString()}`;
+            document.getElementById('overview-total-usdt').innerText = `$${totalUsdt.toLocaleString()}`;
+            
+            document.getElementById('overview-btc-val').innerText = `$${btcVal.toLocaleString()}`;
+            const btcPct = totalUsdt > 0 ? ((btcVal / totalUsdt) * 100).toFixed(1) : 0;
+            document.getElementById('overview-btc-pct').innerText = `${btcPct}% از کل سبد`;
+
+            document.getElementById('overview-usdt-val').innerText = `$${usdtVal.toLocaleString()}`;
+            const usdtPct = totalUsdt > 0 ? ((usdtVal / totalUsdt) * 100).toFixed(1) : 0;
+            document.getElementById('overview-usdt-pct').innerText = `${usdtPct}% نقدینگی آماده`;
+
+            document.getElementById('overview-scenarios-count').innerText = `${appState.scenarios.length} سناریو`;
+
+            // 2. Layers Tab Sync
+            document.getElementById('layer2-val').innerText = `$${usdtVal.toLocaleString()} (${usdtPct}%)`;
+            document.getElementById('layer3-val').innerText = `$${btcVal.toLocaleString()} (${btcPct}%)`;
+            const altsPct = totalUsdt > 0 ? ((altsVal / totalUsdt) * 100).toFixed(1) : 0;
+            document.getElementById('layer4-val').innerText = `$${altsVal.toLocaleString()} (${altsPct}%)`;
+
+            // 3. Render Component Views
+            renderOverviewScenarios();
+            renderScenariosTab();
+            renderWalletsTab();
+            renderAssetsTab();
+            updateCharts();
+
+            lucide.createIcons();
+        }
+
+        // Render Overview Tab Scenarios List
+        function renderOverviewScenarios() {
+            const container = document.getElementById('overview-scenarios-list');
+            container.innerHTML = '';
+            appState.scenarios.slice(0, 4).forEach(sc => {
+                const isBuy = sc.action === 'buy';
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl border bg-slate-900/60 flex items-center justify-between text-xs ${
+                    isBuy ? 'border-emerald-500/30' : 'border-rose-500/30'
+                }`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold px-2 py-0.5 rounded ${isBuy ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+                            سناریو ${sc.id}
+                        </span>
+                        <span class="text-slate-300 font-semibold">${sc.note}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-amber-400 font-mono font-bold">${sc.prob}</span>
+                        <span class="text-slate-400 font-mono">${sc.amount}</span>
+                    </div>
+                `;
+                container.appendChild(div);
             });
         }
 
-        // Render Scenario Cards
-        function renderScenarios() {
-            const container = document.getElementById('scenarios-container');
+        // Render Scenario Tab
+        function renderScenariosTab() {
+            const container = document.getElementById('scenarios-cards-container');
             container.innerHTML = '';
 
-            scenarios.forEach((sc, idx) => {
+            appState.scenarios.forEach((sc, idx) => {
                 const isBuy = sc.action === 'buy';
                 const card = document.createElement('div');
-                card.className = `p-4 rounded-xl border bg-slate-900/80 relative overflow-hidden transition ${
+                card.className = `glass-card p-5 rounded-2xl border bg-slate-900/80 relative transition ${
                     isBuy ? 'border-emerald-500/30 hover:border-emerald-500' : 'border-rose-500/30 hover:border-rose-500'
                 }`;
 
                 card.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-md ${
-                            isBuy ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${
+                            isBuy ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                         }">
                             سناریو ${sc.id}
                         </span>
-                        <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                            احتمال: ${sc.prob}
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                                احتمال: ${sc.prob}
+                            </span>
+                            <button onclick="deleteScenario(${idx})" class="text-slate-500 hover:text-rose-400 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-between my-2">
+                    <div class="flex items-center justify-between my-3 text-xs">
                         <div>
-                            <span class="text-[11px] text-slate-400 block">نوع اقدام:</span>
-                            <span class="text-sm font-bold ${isBuy ? 'text-emerald-400' : 'text-rose-400'} uppercase">
-                                ${isBuy ? 'خرید (BUY)' : 'فروش (SELL)'}
-                            </span>
+                            <span class="text-slate-400 text-[10px] block">نوع اقدام:</span>
+                            <span class="font-bold ${isBuy ? 'text-emerald-400' : 'text-rose-400'} uppercase">${isBuy ? 'خرید (BUY)' : 'فروش (SELL)'}</span>
                         </div>
                         <div class="text-left">
-                            <span class="text-[11px] text-slate-400 block">حجم تخصیص:</span>
-                            <span class="text-sm font-bold text-white font-mono">${sc.amount}</span>
+                            <span class="text-slate-400 text-[10px] block">حجم تخصیص:</span>
+                            <span class="font-bold text-white font-mono">${sc.amount}</span>
                         </div>
                     </div>
 
-                    <div class="bg-slate-800/50 p-2 rounded-lg text-[11px] text-slate-300 mb-2 border border-slate-700/50">
-                        <i data-lucide="info" class="w-3 h-3 inline ml-1 text-blue-400"></i> ${sc.note}
-                    </div>
+                    <p class="text-xs text-slate-300 bg-slate-800/60 p-2.5 rounded-xl mb-3 border border-slate-700/50">
+                        ${sc.note}
+                    </p>
 
-                    <div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
-                        <span class="text-[10px] text-slate-400">وضعیت ستاپ:</span>
-                        <span class="text-[11px] font-semibold text-purple-300 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-[11px]">
+                        <span class="text-slate-400">وضعیت sت‌آپ:</span>
+                        <span class="font-bold text-purple-300 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
                             ${sc.status}
                         </span>
                     </div>
                 `;
                 container.appendChild(card);
             });
-            lucide.createIcons();
         }
 
-        // Initialize Chart.js Donut
-        let myChart = null;
-        function initChart() {
-            const ctx = document.getElementById('portfolioChart').getContext('2d');
-            myChart = new Chart(ctx, {
+        // Render Wallets Tab
+        function renderWalletsTab() {
+            const cardsContainer = document.getElementById('wallets-cards-container');
+            cardsContainer.innerHTML = '';
+
+            appState.wallets.forEach((w) => {
+                // Calculate total USDT stored in this wallet
+                let walletTotalUsdt = 0;
+                appState.assets.forEach(a => {
+                    if(a.allocations && a.allocations[w.id]) {
+                        walletTotalUsdt += parseFloat(a.allocations[w.id]) || 0;
+                    }
+                });
+
+                const div = document.createElement('div');
+                div.className = "glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold text-slate-300">${w.name}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">${w.type}</span>
+                    </div>
+                    <div class="text-xl font-bold text-emerald-400 font-mono mb-1">$${walletTotalUsdt.toLocaleString()}</div>
+                    <span class="text-[10px] text-slate-500 block">مجموع موجودی تخمینی</span>
+                `;
+                cardsContainer.appendChild(div);
+            });
+
+            // Wallet Dynamic Matrix Table
+            const header = document.getElementById('wallet-matrix-header');
+            const body = document.getElementById('wallet-matrix-body');
+
+            let headerHTML = `<tr><th class="p-3">نام ارز</th>`;
+            appState.wallets.forEach(w => {
+                headerHTML += `<th class="p-3 text-center text-cyan-400">${w.name}</th>`;
+            });
+            headerHTML += `<th class="p-3 text-center">مجموع کل ارز</th></tr>`;
+            header.innerHTML = headerHTML;
+
+            let bodyHTML = '';
+            appState.assets.forEach((asset, aIdx) => {
+                bodyHTML += `<tr><td class="p-3 font-bold" style="color: ${asset.color}">${asset.name}</td>`;
+                appState.wallets.forEach(w => {
+                    const currentAlloc = (asset.allocations && asset.allocations[w.id]) || 0;
+                    bodyHTML += `
+                        <td class="p-2 text-center">
+                            <input type="number" step="any" value="${currentAlloc}" 
+                                onchange="updateWalletAllocation('${asset.id}', '${w.id}', this.value)"
+                                class="w-16 text-center bg-slate-800/80 border border-slate-700 rounded-lg py-1 px-1 text-xs text-white font-mono focus:border-cyan-500 outline-none">
+                            $
+                        </td>
+                    `;
+                });
+                bodyHTML += `<td class="p-3 text-center font-bold text-emerald-400 font-mono">$${asset.usdt}</td></tr>`;
+            });
+            body.innerHTML = bodyHTML;
+        }
+
+        function updateWalletAllocation(assetId, walletId, value) {
+            const asset = appState.assets.find(a => a.id === assetId);
+            if(asset) {
+                if(!asset.allocations) asset.allocations = {};
+                asset.allocations[walletId] = parseFloat(value) || 0;
+
+                // Recalculate total asset USDT
+                let sum = 0;
+                Object.values(asset.allocations).forEach(v => sum += (parseFloat(v) || 0));
+                asset.usdt = sum;
+
+                saveState();
+            }
+        }
+
+        // Render Assets Tab (CRUD)
+        function renderAssetsTab() {
+            const tbody = document.getElementById('crud-assets-table-body');
+            tbody.innerHTML = '';
+            const total = getTotalPortfolioUsdt();
+
+            appState.assets.forEach((asset, idx) => {
+                const pct = total > 0 ? ((asset.usdt / total) * 100).toFixed(1) : 0;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold flex items-center gap-2" style="color: ${asset.color}">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${asset.color}"></span>
+                        ${asset.name}
+                    </td>
+                    <td class="p-3 font-bold text-emerald-400 font-mono">$${asset.usdt}</td>
+                    <td class="p-3 font-mono text-slate-400">${pct}%</td>
+                    <td class="p-3 text-slate-400 text-xs">${asset.note || '-'}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editAsset('${asset.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="deleteAsset('${asset.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-rose-400 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Modals Logic
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+        function openAddAssetModal() {
+            document.getElementById('asset-id').value = '';
+            document.getElementById('asset-symbol').value = '';
+            document.getElementById('asset-usdt').value = '';
+            document.getElementById('asset-note').value = '';
+            document.getElementById('modal-asset-title').innerText = 'افزودن ارز جدید';
+            openModal('modal-asset');
+        }
+
+        function editAsset(id) {
+            const asset = appState.assets.find(a => a.id === id);
+            if(asset) {
+                document.getElementById('asset-id').value = asset.id;
+                document.getElementById('asset-symbol').value = asset.name;
+                document.getElementById('asset-usdt').value = asset.usdt;
+                document.getElementById('asset-color').value = asset.color || '#06b6d4';
+                document.getElementById('asset-note').value = asset.note || '';
+                document.getElementById('modal-asset-title').innerText = 'ویرایش ارز';
+                openModal('modal-asset');
+            }
+        }
+
+        function handleAssetSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('asset-id').value;
+            const name = document.getElementById('asset-symbol').value.toUpperCase();
+            const usdt = parseFloat(document.getElementById('asset-usdt').value) || 0;
+            const color = document.getElementById('asset-color').value;
+            const note = document.getElementById('asset-note').value;
+
+            if(id) {
+                const asset = appState.assets.find(a => a.id === id);
+                if(asset) {
+                    asset.name = name;
+                    asset.usdt = usdt;
+                    asset.color = color;
+                    asset.note = note;
+                }
+            } else {
+                appState.assets.push({
+                    id: Date.now().toString(),
+                    name, usdt, color, note, allocations: {}
+                });
+            }
+            closeModal('modal-asset');
+            saveState();
+        }
+
+        function deleteAsset(id) {
+            if(confirm("آیا از حذف این ارز مطمئن هستید؟")) {
+                appState.assets = appState.assets.filter(a => a.id !== id);
+                saveState();
+            }
+        }
+
+        function openAddWalletModal() { openModal('modal-wallet'); }
+        function handleWalletSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('wallet-name').value;
+            const type = document.getElementById('wallet-type').value;
+            const id = name.toLowerCase().replace(/\s+/g, '_');
+
+            if(!appState.wallets.some(w => w.id === id)) {
+                appState.wallets.push({ id, name, type, color: 'cyan' });
+                saveState();
+            }
+            closeModal('modal-wallet');
+        }
+
+        function openAddScenarioModal() { openModal('modal-scenario'); }
+        function handleScenarioSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('scenario-code').value;
+            const prob = document.getElementById('scenario-prob').value;
+            const action = document.getElementById('scenario-action').value;
+            const amount = document.getElementById('scenario-amount').value;
+            const status = document.getElementById('scenario-status').value;
+            const note = document.getElementById('scenario-note').value;
+
+            appState.scenarios.push({ id, prob, action, amount, status, note });
+            closeModal('modal-scenario');
+            saveState();
+        }
+
+        function deleteScenario(index) {
+            if(confirm("آیا از حذف این سناریو اطمینان دارید؟")) {
+                appState.scenarios.splice(index, 1);
+                saveState();
+            }
+        }
+
+        // Charts Engine (Chart.js)
+        let overviewChartObj = null;
+        let layersChartObj = null;
+
+        function updateCharts() {
+            // 1. Overview Donut Chart
+            const overviewCtx = document.getElementById('overviewChart').getContext('2d');
+            if(overviewChartObj) overviewChartObj.destroy();
+
+            overviewChartObj = new Chart(overviewCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: assets.map(a => a.name),
+                    labels: appState.assets.map(a => a.name),
                     datasets: [{
-                        data: assets.map(a => a.usdt),
-                        backgroundColor: assets.map(a => a.color),
+                        data: appState.assets.map(a => a.usdt),
+                        backgroundColor: appState.assets.map(a => a.color),
                         borderWidth: 2,
-                        borderColor: '#151c28'
+                        borderColor: '#131b2e'
                     }]
                 },
                 options: {
@@ -506,40 +939,43 @@
                         legend: {
                             position: 'left',
                             rtl: true,
-                            labels: {
-                                color: '#cbd5e1',
-                                font: { family: 'Vazirmatn', size: 11 },
-                                boxWidth: 12,
-                                padding: 10
-                            }
-                        },
-                        tooltip: {
-                            rtl: true,
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ${context.label}: ${context.raw} USDT`;
-                                }
-                            }
+                            labels: { color: '#94a3b8', font: { family: 'Vazirmatn', size: 10 }, boxWidth: 10 }
                         }
                     },
-                    cutout: '68%'
+                    cutout: '70%'
+                }
+            });
+
+            // 2. Layers Bar Chart
+            const layersCtx = document.getElementById('layersChart').getContext('2d');
+            if(layersChartObj) layersChartObj.destroy();
+
+            layersChartObj = new Chart(layersCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['لایه ۲: تتر (USDT)', 'لایه ۳: بیت‌کوین (BTC)', 'لایه ۴: آلت‌کوین‌ها بر پایه BTC'],
+                    datasets: [{
+                        label: 'ارزش به USDT',
+                        data: [getUsdtValue(), getBtcUsdtValue(), getAltsValue()],
+                        backgroundColor: ['#06b6d4', '#f59e0b', '#8b5cf6'],
+                        borderRadius: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                    }
                 }
             });
         }
 
-        function updateChart() {
-            if (myChart) {
-                myChart.data.labels = assets.map(a => a.name);
-                myChart.data.datasets[0].data = assets.map(a => a.usdt);
-                myChart.update();
-            }
-        }
-
-        // Initialize Everything
+        // Initialize App on DOM Load
         window.addEventListener('DOMContentLoaded', () => {
-            renderAssets();
-            renderScenarios();
-            initChart();
+            switchTab('overview');
         });
     </script>
 </body>
